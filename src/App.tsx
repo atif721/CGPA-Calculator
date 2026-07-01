@@ -4,10 +4,23 @@ import { CourseSection, type CourseField } from "@/components/CourseSection";
 import { SemesterSection, type SemesterField } from "@/components/SemesterSection";
 import { EMPTY_COURSE, EMPTY_SEMESTER, type Course, type Semester } from "@/types";
 import { calculateAverageCGPA, calculateCGPA } from "@/lib/cgpa";
+import "./App.css";
+import useSheetData from "./hooks/useSheetData";
+
+const getStored = (key: string, fallback: string) => localStorage.getItem(key) ?? fallback;
 
 function App() {
   const [courses, setCourses] = useState<Course[]>([{ ...EMPTY_COURSE }]);
   const [semesters, setSemesters] = useState<Semester[]>([{ ...EMPTY_SEMESTER }]);
+
+  const [semester, setSemester] = useState(() => getStored("semester", "5"));
+
+  const handleSemesterChange = (val: string) => {
+    setSemester(val);
+    localStorage.setItem("semester", val);
+  };
+
+  const { data, loading, error } = useSheetData(semester);
 
   const addCourse = (): void => {
     setCourses((prev) => [...prev, { ...EMPTY_COURSE }]);
@@ -25,12 +38,24 @@ function App() {
     setSemesters((prev) => prev.map((semester, i) => (i === index ? { ...semester, [field]: value } : semester)));
   };
 
+  if (error) {
+    return <div> error happaned</div>;
+  }
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center my-auto min-h-svh">
+        <h2>Loading</h2>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen p-4 bg-white text-gray-900">
       <div className="max-w-3xl mx-auto space-y-6">
         <h1 className="text-3xl font-bold text-center">CGPA Calculator</h1>
 
-        <CourseSection courses={courses} onUpdate={updateCourse} />
+        <CourseSection data={data} courses={courses} onUpdate={updateCourse} />
 
         <div className="flex flex-col sm:flex-row justify-between items-center pt-6 gap-4">
           <Button onClick={addCourse} className="py-7 bg-blue-200">
