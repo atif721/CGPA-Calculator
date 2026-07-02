@@ -1,17 +1,19 @@
-import { Input } from "@/components/ui/input";
+// import { Input } from "@/components/ui/input";
 import { creditOptions, gradeOptions, type Course } from "@/types";
+import CourseTitle from "./CourseTitle";
 import type { DaySchedule } from "@/types/types";
-import CourseTitleNames from "./CourseTitleNames";
 
 export type CourseField = keyof Course;
 
 interface CourseSectionProps {
   data: DaySchedule | null;
+  semester: string;
+  section: string;
   courses: Course[];
   onUpdate: (index: number, field: CourseField, value: string) => void;
 }
 
-export function CourseSection({ data, courses, onUpdate }: CourseSectionProps) {
+export function CourseSection({ data, semester, section, courses, onUpdate }: CourseSectionProps) {
   return (
     <>
       <div className="hidden sm:grid grid-cols-3 font-medium border-b pb-2">
@@ -20,18 +22,21 @@ export function CourseSection({ data, courses, onUpdate }: CourseSectionProps) {
         <div>Letter Grade</div>
       </div>
 
-      <div>
-        <CourseTitleNames data={data}></CourseTitleNames>
-      </div>
-
       {courses.map((course, index) => (
         <div key={index} className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center py-2 border-b sm:border-none">
-          <Input
+          <CourseTitle
+            data={data}
+            semester={semester}
+            section={section}
+            courses={courses}
+            onUpdate={onUpdate}></CourseTitle>
+
+          {/* <Input
             type="text"
             placeholder="e.g. CSE2101 or Java"
             value={course.name}
             onChange={(e) => onUpdate(index, "name", e.target.value)}
-          />
+          /> */}
           <select
             value={course.credit}
             onChange={(e) => onUpdate(index, "credit", e.target.value)}

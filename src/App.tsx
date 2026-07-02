@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CourseSection, type CourseField } from "@/components/CourseSection";
-import { SemesterSection, type SemesterField } from "@/components/SemesterSection";
+import { SemesterSection, type SemesterField } from "@/components/SemesterAverage";
 import { EMPTY_COURSE, EMPTY_SEMESTER, type Course, type Semester } from "@/types";
 import { calculateAverageCGPA, calculateCGPA } from "@/lib/cgpa";
 import "./App.css";
 import useSheetData from "./hooks/useSheetData";
+import SelectingSemester from "./components/SelectingSemester";
+import CourseTitle from "./components/CourseTitle";
 
 const getStored = (key: string, fallback: string) => localStorage.getItem(key) ?? fallback;
 
@@ -13,14 +15,20 @@ function App() {
   const [courses, setCourses] = useState<Course[]>([{ ...EMPTY_COURSE }]);
   const [semesters, setSemesters] = useState<Semester[]>([{ ...EMPTY_SEMESTER }]);
 
-  const [semester, setSemester] = useState(() => getStored("semester", "5"));
+  const [semester, setSemester] = useState(() => getStored("semester", ""));
+  const [section, setSection] = useState(() => getStored("section", ""));
 
   const handleSemesterChange = (val: string) => {
     setSemester(val);
     localStorage.setItem("semester", val);
   };
 
-  const { data, loading, error } = useSheetData(semester);
+  const handleSectionChange = (val: string) => {
+    setSection(val);
+    localStorage.setItem("section", val);
+  };
+
+  const { data, loading, error, sections } = useSheetData(semester);
 
   const addCourse = (): void => {
     setCourses((prev) => [...prev, { ...EMPTY_COURSE }]);
@@ -55,7 +63,15 @@ function App() {
       <div className="max-w-3xl mx-auto space-y-6">
         <h1 className="text-3xl font-bold text-center">CGPA Calculator</h1>
 
-        <CourseSection data={data} courses={courses} onUpdate={updateCourse} />
+        <SelectingSemester
+          semester={semester}
+          section={section}
+          sections={sections}
+          onSemesterChange={handleSemesterChange}
+          onSectionChange={handleSectionChange}
+        />
+
+        <CourseSection data={data} semester={semester} section={section} courses={courses} onUpdate={updateCourse} />
 
         <div className="flex flex-col sm:flex-row justify-between items-center pt-6 gap-4">
           <Button onClick={addCourse} className="py-7 bg-blue-200">
@@ -68,7 +84,6 @@ function App() {
         </div>
 
         <h2 className="text-2xl font-bold pt-10 text-center">Semester Average Calculator</h2>
-
         <SemesterSection semesters={semesters} onUpdate={updateSemester} />
 
         <div className="flex justify-between items-center pt-4 flex-col sm:flex-row gap-4">
