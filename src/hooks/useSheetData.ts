@@ -4,6 +4,7 @@ import type { DaySchedule } from "@/types/types";
 
 const useSheetData = (semester: string) => {
   const [data, setData] = useState<DaySchedule | null>(null);
+  const [sections, setSections] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -17,6 +18,9 @@ const useSheetData = (semester: string) => {
       const routineJSON = await routineRes.json();
       setData(routineJSON);
 
+      const sectionRes = await fetch(`${url}/cse/sections/?semester=${semester}`);
+      const sectionJSON = await sectionRes.json();
+      setSections(sectionJSON[semester] ?? []);
       setLoading(false);
     } catch {
       setError("Something error");
@@ -28,7 +32,7 @@ const useSheetData = (semester: string) => {
     fetchData();
   }, [fetchData]);
 
-  return { data, loading, error };
+  return { data, loading, error, sections };
 };
 
 export default useSheetData;
