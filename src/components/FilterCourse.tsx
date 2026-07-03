@@ -1,13 +1,12 @@
 import type { DaySchedule } from "@/types/types";
 
-interface FilterDataProps {
+interface FilterCourseProps {
   data: DaySchedule | null;
   section: string;
 }
 
-const FilterCourse = ({ data, section }: FilterDataProps) => {
+const FilterCourse = ({ data, section }: FilterCourseProps): string[] => {
   const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"];
-
   const displayedCourses = new Set<string>();
   const uniqueCourses: string[] = [];
 
@@ -25,12 +24,7 @@ const FilterCourse = ({ data, section }: FilterDataProps) => {
     });
   });
 
-  return (
-    <div className="rounded-xl shadow-md p-4 mb-4 bg-card dark:bg-[rgb(7,35,57)] border border-border dark:border-border">
-      {uniqueCourses.map((course) => (
-        <p key={course}>{course}</p>
-      ))}
-    </div>
-  );
+  return uniqueCourses.sort((a, b) => a.localeCompare(b));
 };
+
 export default FilterCourse;

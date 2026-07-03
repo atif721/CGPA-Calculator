@@ -1,5 +1,5 @@
 import { Input } from "@/components/ui/input";
-import { semesterOptions, type Semester } from "@/types";
+import { semesterOptions, type Semester } from "@/types/types";
 
 export type SemesterField = keyof Semester;
 

@@ -2,12 +2,11 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CourseSection, type CourseField } from "@/components/CourseSection";
 import { SemesterSection, type SemesterField } from "@/components/SemesterAverage";
-import { EMPTY_COURSE, EMPTY_SEMESTER, type Course, type Semester } from "@/types";
+import { EMPTY_COURSE, EMPTY_SEMESTER, type Course, type Semester } from "@/types/types";
 import { calculateAverageCGPA, calculateCGPA } from "@/lib/cgpa";
 import "./App.css";
 import useSheetData from "./hooks/useSheetData";
 import SelectingSemester from "./components/SelectingSemester";
-import CourseTitle from "./components/CourseTitle";
 
 const getStored = (key: string, fallback: string) => localStorage.getItem(key) ?? fallback;
 
@@ -71,10 +70,10 @@ function App() {
           onSectionChange={handleSectionChange}
         />
 
-        <CourseSection data={data} semester={semester} section={section} courses={courses} onUpdate={updateCourse} />
+        <CourseSection data={data} section={section} courses={courses} onUpdate={updateCourse} />
 
         <div className="flex flex-col sm:flex-row justify-between items-center pt-6 gap-4">
-          <Button onClick={addCourse} className="py-7 bg-blue-200">
+          <Button onClick={addCourse} className="py-7 bg-blue-200 text-gray-800">
             <span className="text-base sm:text-lg">Add Another Course</span>
           </Button>
 
@@ -87,7 +86,7 @@ function App() {
         <SemesterSection semesters={semesters} onUpdate={updateSemester} />
 
         <div className="flex justify-between items-center pt-4 flex-col sm:flex-row gap-4">
-          <Button onClick={addSemester} className="py-6 px-8 text-xl bg-green-200">
+          <Button onClick={addSemester} className="py-6 px-8 text-xl bg-green-200 text-gray-800">
             Add Semester
           </Button>
           <div className="text-xl sm:text-2xl font-semibold bg-green-100 px-4 py-2 sm:px-6 sm:py-3 rounded-lg shadow text-center">
