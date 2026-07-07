@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CourseSection, type CourseField } from "@/components/CourseSection";
 import { SemesterSection, type SemesterField } from "@/components/SemesterAverage";
@@ -10,9 +10,22 @@ import SelectingSemester from "./components/SelectingSemester";
 
 const getStored = (key: string, fallback: string) => localStorage.getItem(key) ?? fallback;
 
+const getStoredArray = <T,>(key: string, fallback: T[]): T[] => {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return fallback;
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) && parsed.length > 0 ? (parsed as T[]) : fallback;
+  } catch {
+    return fallback;
+  }
+};
+
 function App() {
-  const [courses, setCourses] = useState<Course[]>([{ ...EMPTY_COURSE }]);
-  const [semesters, setSemesters] = useState<Semester[]>([{ ...EMPTY_SEMESTER }]);
+  const [courses, setCourses] = useState<Course[]>(() => getStoredArray<Course>("courses", [{ ...EMPTY_COURSE }]));
+  const [semesters, setSemesters] = useState<Semester[]>(() =>
+    getStoredArray<Semester>("semesters", [{ ...EMPTY_SEMESTER }])
+  );
 
   const [semester, setSemester] = useState(() => getStored("semester", ""));
   const [section, setSection] = useState(() => getStored("section", ""));
@@ -26,6 +39,14 @@ function App() {
     setSection(val);
     localStorage.setItem("section", val);
   };
+
+  useEffect(() => {
+    localStorage.setItem("courses", JSON.stringify(courses));
+  }, [courses]);
+
+  useEffect(() => {
+    localStorage.setItem("semesters", JSON.stringify(semesters));
+  }, [semesters]);
 
   const { data, loading, error, sections } = useSheetData(semester);
 
