@@ -1,4 +1,4 @@
-import type { Course, Semester } from "@/types";
+import type { Course, Semester } from "@/types/types";
 
 /** Weighted CGPA from a list of {credit, gpa} courses. Returns "0.00" when no valid input. */
 export function calculateCGPA(courses: Course[]): string {
